@@ -11,29 +11,30 @@ from matplotlib import animation
 class ConwayGoL(CellAutomata2D):  
 
     def __init__(self, xlen, ylen, pbc=False, cmap="Greens"):
-        CellAutomata2D.__init__(self, xlen, ylen, pbc=pbc, dtype=bool, show_cbar=False)
+        CellAutomata2D.__init__(self, xlen, ylen, pbc=pbc, dtype=bool,
+                                show_cbar=False)
 
         # Create auxiliar lattices
-        # Stores the modifications in the last step
-        self._ns_neigh = np.zeros((self.ylen, self.xlen),
-                                 dtype=self.dtype)
+        self._auxlatt = np.zeros((self.ylen, self.xlen), dtype=int)
+        self._ns_neigh = np.zeros((self._ylen_bc, self._xlen_bc), dtype=int)
+        self._births = np.zeros((self.ylen, self.xlen), dtype=self.dtype)
+        self._deaths = np.zeros((self.ylen, self.xlen), dtype=self.dtype)
+
+
         # Create colormap for plots
         self.vmincolor = 0 - 0.5
-        self.vmaxcolor = 2*maxheight + 0.5
-        bounds = np.arange(0, 2*maxheight, 2*maxheight + 1) - 0.5
+        self.vmaxcolor = 1+ 0.5
+        bounds = np.arange(0, 1, 2) - 0.5
         self.cnorm = colors.BoundaryNorm(bounds, 256)
         self.cmap = plt.cm.get_cmap(cmap, 2)
 
 
-    def randomfill(self, minval=0, maxval=None):
+    def randomfill(self):
         """Fill the lattice randomly with values in the given range.
 
         """
-        if maxval == None:
-            maxval = self.maxheight
-
         for idx, height in np.ndenumerate(self.latt):
-            self.latt[idx] = np.random.randint(self.maxheight, self.maxheight*5)
+            self.latt[idx] = np.random.randint(0, 2, dtype=bool)
 
         return
 
@@ -41,20 +42,18 @@ class ConwayGoL(CellAutomata2D):
         """Fill the lattice randomly up to a given total mass.
 
         """
+        # TODO: return error if mass bigger that number of cells
+        self.resetlattice()
+
         for i in range(mass):
+            # Select and fill random empty cell
             flat_idx = np.random.randint(0, self.size-1)
-            self.latt.flat[flat_idx] += 1
+            while self.latt.flat[flat_idx] != False:
+                flat_idx = np.random.randint(0, self.size-1)
+
+            self.latt.flat[flat_idx] = True
 
         return
-
-
-    def mass(self):
-        """Return the value of the total mass of the system.
-
-        """
-        lattmass = self.latt.sum()
-        return lattmass
-
 
     def _evolvestep(self):
         """Evolve the system one step.
@@ -65,57 +64,36 @@ class ConwayGoL(CellAutomata2D):
                 True if the lattice have moved and False otherwise.
 
         """
-        self._auxlatt.fill(0)
-        self._collapse[self._latt_idx] = (self.latt 
-                                          > self.maxheight).astype(int)
-        self._auxlatt -= self.maxheight*self._collapse
-        self._auxlatt += np.roll(self._collapse, 1, axis=0)
-        self._auxlatt += np.roll(self._collapse, -1, axis=0)
-        self._auxlatt += np.roll(self._collapse, 1, axis=1)
-        self._auxlatt += np.roll(self._collapse, -1, axis=1)
-        self.latt += self._auxlatt[self._latt_idx]
-        is_active = self._collapse.any()
+        # Find number of neighbours of each cell
+        self._ns_neigh.fill(0)
+        self._ns_neigh += np.roll(self._latt_bc, +1, axis=0)
+        self._ns_neigh += np.roll(self._latt_bc, -1, axis=0)
+        self._ns_neigh += np.roll(self._latt_bc, +1, axis=1)
+        self._ns_neigh += np.roll(self._latt_bc, -1, axis=1)
+        self._ns_neigh += np.roll(self._latt_bc, (+1, +1), axis=(0, 1))
+        self._ns_neigh += np.roll(self._latt_bc, (+1, -1), axis=(0, 1))
+        self._ns_neigh += np.roll(self._latt_bc, (-1, +1), axis=(0, 1))
+        self._ns_neigh += np.roll(self._latt_bc, (-1, -1), axis=(0, 1))
+
+        # Calculate births
+        self._births = np.logical_and((self._ns_neigh==3)[self._latt_idx],
+                                      np.logical_not(self.latt))
+        self._auxlatt += self._births
+
+        # Calculate deaths
+        self._deaths = np.logical_and(
+                np.logical_or((self._ns_neigh>3)[self._latt_idx], 
+                              (self._ns_neigh<2)[self._latt_idx]), self.latt)
+        self._auxlatt -= self._deaths
+
+        # Update lattice
+        self.latt += self._births
+        self.latt -= self._deaths
+
+        is_active = self._auxlatt.any()
 
         return is_active
         
-
-    def evolve(self, nsteps=1, ret_activecells=True): 
-        """Evolve the system in nsteps timesteps.
-            
-        Parameters
-        ----------
-            nsteps : int
-                Number of steps the system will be evolved.
-
-            affectedcells : bool 
-                If True, a bool array with the affected cells will
-                be returned.
-                
-        Returns
-        -------
-            is_active : bool
-                True if the lattice have moved and False otherwise.
-
-        """
-        if ret_activecells:
-            activecells = np.zeros((self._ylen_bc, self._xlen_bc), dtype=bool)
-
-        is_active = False
-        #collapse = np.zeros((self._ylen_bc, self._xlen_bc), dtype=self.dtype)
-        for i in range(nsteps):
-            is_active = self._evolvestep()
-
-#            for (y, x), height in np.ndenumerate(self.latt):
-#                if height > self.maxheight:
-#                    self._auxlatt[self._bc(y, x)] -= 4
-#                    self._auxlatt[self._bc(y, x+1)] += 1 
-#                    self._auxlatt[self._bc(y, x-1)] += 1
-#                    self._auxlatt[self._bc(y+1, x)] += 1
-#                    self._auxlatt[self._bc(y-1, x)] += 1
-#                    is_active = True
-
-        return is_active
-
 
     def measurecascade(self, maxtime=10000, retarray=False):
         """Measure the duration and number of affected cells of a cascade.
