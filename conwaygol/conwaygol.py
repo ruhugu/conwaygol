@@ -10,7 +10,7 @@ from matplotlib import animation
 
 class ConwayGoL(CellAutomata2D):  
 
-    def __init__(self, xlen, ylen, pbc=True, cmap="Greens"):
+    def __init__(self, xlen, ylen, pbc=True, cmap="Purples"):
         CellAutomata2D.__init__(self, xlen, ylen, pbc=pbc, dtype=bool,
                                 show_cbar=False)
 
@@ -19,7 +19,6 @@ class ConwayGoL(CellAutomata2D):
         self._ns_neigh = np.zeros((self._ylen_bc, self._xlen_bc), dtype=int)
         self._births = np.zeros((self.ylen, self.xlen), dtype=self.dtype)
         self._deaths = np.zeros((self.ylen, self.xlen), dtype=self.dtype)
-
 
         # Create colormap for plots
         self.vmincolor = 0 - 0.5
@@ -38,20 +37,27 @@ class ConwayGoL(CellAutomata2D):
 
         return
 
-    def randomfill_mass(self, mass):
-        """Fill the lattice randomly up to a given total mass.
+    def randomfill_mass(self, mass, resetlatt=True):
+        """Fill the lattice randomly with a given total mass.
 
         """
-        # TODO: return error if mass bigger that number of cells
-        self.resetlattice()
+        if mass > self.size:
+            raise ValueError("The given mass is bigger than the number"
+                             "of cells.")
+        if resetlatt:
+            self.resetlattice()
+
+        # Generate list of unasigned cells indices
+        empty_idxs = list(range(self.size))
 
         for i in range(mass):
             # Select and fill random empty cell
-            flat_idx = np.random.randint(0, self.size-1)
-            while self.latt.flat[flat_idx] != False:
-                flat_idx = np.random.randint(0, self.size-1)
-
+            aux_idx = np.random.randint(0, len(empty_idxs) - 1)
+            flat_idx = empty_idxs[aux_idx]
+            #while self.latt.flat[flat_idx] != False:
+            #flat_idx = np.random.randint(0, self.size-1)
             self.latt.flat[flat_idx] = True
+            del(empty_idxs[aux_idx])
 
         return
 
