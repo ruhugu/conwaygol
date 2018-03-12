@@ -10,7 +10,7 @@ from matplotlib import animation
 
 class ConwayGoL(CellAutomata2D):  
 
-    def __init__(self, xlen, ylen, pbc=False, cmap="Greens"):
+    def __init__(self, xlen, ylen, pbc=True, cmap="Greens"):
         CellAutomata2D.__init__(self, xlen, ylen, pbc=pbc, dtype=bool,
                                 show_cbar=False)
 
