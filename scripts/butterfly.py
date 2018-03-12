@@ -11,13 +11,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from conwaygol import ConwayGoL
 
 # Parameters
-L = 500
+L = 80
 y_pert = L/2 # Perturbation x position
 x_pert = L/2 # Idem y
-nframes = 3000
-fps = 10
-figxlen = 8
-figylen = 5
+nframes = 100
+fps = 5
+figylen = 3.5
+figxlen = 1.8*figylen
 
 # Auxiliar functions
 def combine(game1, game2):
@@ -131,12 +131,12 @@ anim = animation.FuncAnimation(fig, update, frames=nframes, interval=1000./fps,
                                plot_sep))
 
 # Show the animation
-plt.show()
+#plt.show()
 
 # Save animation to file (this does not work if plt.show() has been used before)
 # As mp4
-#anim.save("clusterevolutionL{0}.mp4".format(L), dpi=300, fps=fps,
+#anim.save("butterflyL{0}.mp4".format(L), dpi=300, fps=fps,
 #          extra_args=['-vcodec', 'libx264'])
 # As GIF (imagemagick must be installed)
-#anim.save("clusterevolutionL{0}.gif".format(L), dpi=150, fps=fps,
-#          writer='imagemagick')
+anim.save("butterflyL{0}.gif".format(L), dpi=150, fps=fps,
+          writer='imagemagick')
