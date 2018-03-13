@@ -15,6 +15,15 @@ This modules requires both [matplotlib](https://matplotlib.org/) and [numpy](htt
 
 ## Some output examples
 
+Relaxation process of 100 simulations in a 25x25 lattice with an intial mass of 312 living cells ([script](https://github.com/ruhugu/conwaygol/blob/master/scripts/relaxation.py)).
+
+<img src="https://raw.githubusercontent.com/ruhugu/conwaygol/master/output_examples/relaxationL25N100.png" alt="Drawing" width="500"/>
+
+
+Propagation of a local perturbaction in a 80x80 lattice. A random configuration is perturbed locally (the state of the cell in the center is changed) and the evolution of both the pertubed and unpertubed lattices is tracked. Black cells are those which are alive in both simulations, blue cells are only alive in the unperturbed one, orange ones are only alive in the perturbed one and finally white cells are dead in both simulations ([script](https://github.com/ruhugu/conwaygol/blob/master/scripts/butterfly.py)).
+
+<img src="https://raw.githubusercontent.com/ruhugu/conwaygol/master/output_examples/butterflyL80.gif" alt="Drawing" width="700"/>
+
 
 ## License
 
