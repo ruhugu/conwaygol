@@ -1,4 +1,4 @@
-# Calculate and visualice how a perturbed "trajectory" separates from the original one as time passes.
+# Calculate and plot how the mass of a system evolve with time.
 
 import os
 import sys
@@ -10,12 +10,14 @@ from matplotlib import animation
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from conwaygol import ConwayGoL
 
+
+# TODO: store the data in logarithmically spaced times 
+
 # Parameters
 L = 25
 inimass = L*L/2
 nsteps = 10000
 nsim = 100
-#fps = 10
 figylen = 3
 figxlen = 1.62*figylen
 
@@ -54,6 +56,9 @@ for m_vec in ms:
     ms_sum += m_vec
 ms_mean = ms_sum/float(nsim)
 ax.loglog(ts, ms_mean/float(game.size), color="black")
+
+# Store the mean curve
+np.savetxt("relaxationL{0}N{1}.dat".format(L, nsim), np.vstack((ts, ms_mean)))
 
 # Show the plot
 #plt.show()
