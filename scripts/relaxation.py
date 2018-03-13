@@ -14,10 +14,10 @@ from conwaygol import ConwayGoL
 # TODO: store the data in logarithmically spaced times 
 
 # Parameters
-L = 25
+L = 1000
 inimass = L*L/2
-nsteps = 10000
-nsim = 100
+nsteps = 100000
+nsim = 50
 figylen = 3
 figxlen = 1.62*figylen
 
@@ -32,6 +32,7 @@ ts = np.arange(nsteps)
 
 # Calculate
 for j_sim in range(nsim):
+    print("Simulation {0}/{1}".format(j_sim + 1, nsim))
     # Reset lattice and fill randomly
     game.randomfill_mass(inimass)
     # Append new vector to store the mass
