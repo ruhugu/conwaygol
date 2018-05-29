@@ -15,7 +15,7 @@ This modules requires both [matplotlib](https://matplotlib.org/) and [numpy](htt
 
 ## Some output examples
 
-Relaxation process of 100 simulations in a 50x50 lattice with an intial mass of 312 living cells ([script](https://github.com/ruhugu/conwaygol/blob/master/scripts/relaxation.py)).
+Relaxation process of 100 simulations in a 50x50 lattice ([script](https://github.com/ruhugu/conwaygol/blob/master/scripts/relaxation.py)).
 
 <img src="https://raw.githubusercontent.com/ruhugu/conwaygol/master/output_examples/relaxationL50N100.png" alt="Drawing" width="500"/>
 
