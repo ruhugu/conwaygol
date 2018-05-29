@@ -24,7 +24,7 @@ Propagation of a local perturbaction in a 80x80 lattice. A random configuration 
 
 <img src="https://raw.githubusercontent.com/ruhugu/conwaygol/master/output_examples/butterflyL80.gif" alt="Drawing" width="700"/>
 
-Estimation of the Lyapunov exponent of the system using a separation graph like the one in the previous examples. Each of the curves for the different system sizes is the average of 200 simulations ([script](https://github.com/ruhugu/conwaygol/blob/master/scripts/lyapunov.py))
+Estimation of the Lyapunov exponent of the system using a separation graph like the one in the previous examples. Each of the curves for the different system sizes is the average of 200 simulations ([script](https://github.com/ruhugu/conwaygol/blob/master/scripts/lyapunov.py)).
 
 <img src="https://raw.githubusercontent.com/ruhugu/conwaygol/master/output_examples/separation.png" alt="Drawing" width="600"/>
 
